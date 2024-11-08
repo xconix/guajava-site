@@ -1,9 +1,9 @@
-name: Deploy Vue 3 Project to Hostinger Website
+name: Deployer le site principal de Guajava sur Hostinger Website
 
 on:
   push:
     branches:
-      - Modusta
+      - main
 
 jobs:
   deploy:
