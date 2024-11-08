@@ -1,0 +1,49 @@
+name: Deploy Vue 3 Project to Hostinger Website
+
+on:
+  push:
+    branches:
+      - Modusta
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install Dependencies and Build
+      run: |
+        npm install
+        npm run build
+
+    - name: Install lftp
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lftp
+
+    - name: Deploy to FTP server
+      env:
+        FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      run: |
+        lftp -c "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER; mirror -R ./dist/ /public_html/"
+
+    # Vérification finale
+    - name: Vérification du déploiement
+      run: |
+        echo "Vérification du déploiement..."
+        HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" https://guajava.site/ )
+        if [ "$HTTP_STATUS" -eq 200 ]; then
+          echo "Site is up and running."
+        else
+          echo "Site is not available. HTTP status: $HTTP_STATUS"
+          exit 1
+        fi
