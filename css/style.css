@@ -249,7 +249,7 @@ body {
 .showcase-grid {
   margin-top: 2rem;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 1rem;
 }
 
